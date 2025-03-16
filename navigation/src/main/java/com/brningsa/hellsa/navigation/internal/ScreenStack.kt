@@ -3,11 +3,14 @@ package com.brningsa.hellsa.navigation.internal
 import android.annotation.SuppressLint
 import android.os.Parcel
 import android.os.Parcelable
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.core.os.ParcelCompat
 import com.brningsa.hellsa.navigation.NavigationState
 import com.brningsa.hellsa.navigation.Route
 import com.brningsa.hellsa.navigation.Router
+import com.brningsa.hellsa.navigation.Screen
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 
@@ -25,6 +28,10 @@ internal class ScreenStack(
 
     override val currentRoute: Route
         get() = routes.last().route
+
+    override val currentScreen: Screen by derivedStateOf {
+        currentRoute.screenProducer()
+    }
 
     override val currentUuid: String
         get() = routes.last().uuid
@@ -51,12 +58,12 @@ internal class ScreenStack(
     }
 
     constructor(parcel: Parcel) : this(
-        SnapshotStateList<Route>().also { newList ->
-            ParcelCompat.readList<Route>(
+        SnapshotStateList<RouteRecord>().also { newList ->
+            ParcelCompat.readList<RouteRecord>(
                 parcel,
                 newList,
-                Route::class.java.classLoader,
-                Route::class.java
+                RouteRecord::class.java.classLoader,
+                RouteRecord::class.java
             )
         }
     )

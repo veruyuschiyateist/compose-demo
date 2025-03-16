@@ -22,19 +22,31 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.brningsa.hellsa.myapplication.ItemsRepository
 import com.brningsa.hellsa.myapplication.R
+import com.brningsa.hellsa.myapplication.ui.AppScreen
+import com.brningsa.hellsa.myapplication.ui.AppScreenEnvironment
 import com.brningsa.hellsa.navigation.LocalRouter
 
-@Composable
-fun AddItemScreen() {
-    val itemsRepository = ItemsRepository.get()
-    val router = LocalRouter.current
+val AddItemScreenProducer = { AddItemScreen() }
 
-    AddItemContent(
-        onSubmitNewItem = {
-            itemsRepository.addItem(it)
-            router.pop()
-        }
-    )
+class AddItemScreen : AppScreen {
+
+    override val environment = AppScreenEnvironment().apply {
+        titleRes = R.string.add_item
+    }
+
+    @Composable
+    override fun Content() {
+        val itemsRepository = ItemsRepository.get()
+        val router = LocalRouter.current
+
+        AddItemContent(
+            onSubmitNewItem = {
+                itemsRepository.addItem(it)
+                router.pop()
+            }
+        )
+    }
+
 }
 
 @Composable

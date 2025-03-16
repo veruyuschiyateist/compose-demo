@@ -32,12 +32,15 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
+import com.brningsa.hellsa.myapplication.ui.AppScreenEnvironment
+import com.brningsa.hellsa.myapplication.ui.scaffold.AppFloatingActionButton
 import com.brningsa.hellsa.myapplication.ui.screens.AddItemScreen
 import com.brningsa.hellsa.myapplication.ui.screens.ItemsScreen
 import com.brningsa.hellsa.myapplication.ui.screens.ProfileScreen
 import com.brningsa.hellsa.myapplication.ui.screens.SettingsScreen
 import com.brningsa.hellsa.myapplication.ui.theme.MyApplicationTheme
 import com.brningsa.hellsa.navigation.NavigationHost
+import com.brningsa.hellsa.navigation.ScreenEnvironment
 import com.brningsa.hellsa.navigation.rememberNavigation
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -48,6 +51,7 @@ fun AppScaffold(
 ) {
     val navigation = rememberNavigation(initialRoute = AppRoute.Tab.Items)
     val (router, navigationState) = navigation
+    val environment = navigationState.currentScreen.environment as AppScreenEnvironment
 
     Scaffold(
         topBar = {
@@ -55,8 +59,7 @@ fun AppScaffold(
                 title = {
                     Text(
                         text = stringResource(
-                            (navigationState.currentRoute as? AppRoute)?.titleRes
-                                ?: R.string.app_name
+                            environment.titleRes
                         ),
                         fontWeight = FontWeight.Bold,
                     )
@@ -119,39 +122,37 @@ fun AppScaffold(
             )
         },
         floatingActionButton = {
-            if (navigationState.currentRoute == AppRoute.Tab.Items) {
-                FloatingActionButton(
-                    onClick = {
-                        router.launch(route = AppRoute.AddItem)
-                    }
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Add,
-                        contentDescription = stringResource(R.string.add_new_item)
-                    )
-                }
-            }
+            AppFloatingActionButton(
+                floatingAction = environment.floatingAction
+            )
         },
         floatingActionButtonPosition = FabPosition.End,
         bottomBar = {
             if (navigationState.isRoot) {
                 NavigationBar {
                     AppRouteTabs.forEach { tab ->
-                        NavigationBarItem(
-                            selected = navigationState.currentRoute == tab,
-                            label = {
-                                Text(text = stringResource(tab.titleRes))
-                            },
-                            onClick = {
-                                router.restart(route = tab)
-                            },
-                            icon = {
-                                Icon(
-                                    imageVector = tab.icon,
-                                    contentDescription = stringResource(tab.titleRes)
-                                )
-                            }
-                        )
+                        val environment = remember(tab) {
+                            tab.screenProducer().environment
+                        }
+                        val icon = environment.icon
+                        if (icon != null) {
+                            NavigationBarItem(
+                                selected = navigationState.currentRoute == tab,
+                                label = {
+                                    Text(text = stringResource(environment.titleRes))
+                                },
+                                onClick = {
+                                    router.restart(route = tab)
+                                },
+                                icon = {
+                                    Icon(
+                                        imageVector = icon,
+                                        contentDescription = stringResource(environment.titleRes)
+                                    )
+                                }
+                            )
+                        }
+
                     }
                 }
             }
@@ -160,14 +161,7 @@ fun AppScaffold(
         NavigationHost(
             navigation = navigation,
             modifier = Modifier.padding(paddingValues),
-        ) { currentRoute ->
-            when (currentRoute) {
-                AppRoute.Tab.Items -> ItemsScreen()
-                AppRoute.Tab.Profile -> ProfileScreen()
-                AppRoute.Tab.Settings -> SettingsScreen()
-                AppRoute.AddItem -> AddItemScreen()
-            }
-        }
+        )
     }
 }
 
