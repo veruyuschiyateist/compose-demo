@@ -11,12 +11,14 @@ import com.brningsa.hellsa.navigation.NavigationState
 import com.brningsa.hellsa.navigation.Route
 import com.brningsa.hellsa.navigation.Router
 import com.brningsa.hellsa.navigation.Screen
+import com.brningsa.hellsa.navigation.ScreenResponseReceiver
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 
 @SuppressLint("ParcelCreator")
 internal class ScreenStack(
-    private val routes: SnapshotStateList<RouteRecord>
+    private val routes: SnapshotStateList<RouteRecord>,
+    private val screenResponseReceiverBus: ScreenResponseReceiverBus = ScreenResponseReceiverBus()
 ) : NavigationState, Router, InternalNavigationState, Parcelable {
 
     private val eventsFlow = MutableSharedFlow<NavigationEvent>(
@@ -36,18 +38,25 @@ internal class ScreenStack(
     override val currentUuid: String
         get() = routes.last().uuid
 
+    override val screenResponseReceiver: ScreenResponseReceiver = screenResponseReceiverBus
+
     override fun launch(route: Route) {
+        screenResponseReceiverBus.cleanUp()
         routes.add(RouteRecord(route))
     }
 
-    override fun pop() {
+    override fun pop(response: Any?) {
         val removedRoute = routes.removeLastOrNull()
         if (removedRoute != null) {
             eventsFlow.tryEmit(NavigationEvent.Removed(removedRoute))
+            if (response != null) {
+                screenResponseReceiverBus.send(response)
+            }
         }
     }
 
     override fun restart(route: Route) {
+        screenResponseReceiverBus.cleanUp()
         routes.apply {
             routes.forEach {
                 eventsFlow.tryEmit(NavigationEvent.Removed(route = it))

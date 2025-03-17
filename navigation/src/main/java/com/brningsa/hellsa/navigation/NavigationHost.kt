@@ -30,7 +30,10 @@ fun NavigationHost(
     val saveableStateHolder = rememberSaveableStateHolder()
     saveableStateHolder.SaveableStateProvider(key = internalState.currentUuid) {
         Box(modifier = modifier) {
-            CompositionLocalProvider(LocalRouter provides router) {
+            CompositionLocalProvider(
+                LocalRouter provides router,
+                LocalScreenResponseReceiver provides internalState.screenResponseReceiver
+            ) {
                 navigationState.currentScreen.Content()
             }
         }

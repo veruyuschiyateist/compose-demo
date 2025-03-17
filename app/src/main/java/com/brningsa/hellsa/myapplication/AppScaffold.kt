@@ -5,7 +5,6 @@ import android.widget.Toast
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.CenterAlignedTopAppBar
@@ -13,7 +12,6 @@ import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FabPosition
-import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.NavigationBar
@@ -34,13 +32,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import com.brningsa.hellsa.myapplication.ui.AppScreenEnvironment
 import com.brningsa.hellsa.myapplication.ui.scaffold.AppFloatingActionButton
-import com.brningsa.hellsa.myapplication.ui.screens.AddItemScreen
-import com.brningsa.hellsa.myapplication.ui.screens.ItemsScreen
-import com.brningsa.hellsa.myapplication.ui.screens.ProfileScreen
-import com.brningsa.hellsa.myapplication.ui.screens.SettingsScreen
 import com.brningsa.hellsa.myapplication.ui.theme.MyApplicationTheme
 import com.brningsa.hellsa.navigation.NavigationHost
-import com.brningsa.hellsa.navigation.ScreenEnvironment
 import com.brningsa.hellsa.navigation.rememberNavigation
 
 @OptIn(ExperimentalMaterial3Api::class)

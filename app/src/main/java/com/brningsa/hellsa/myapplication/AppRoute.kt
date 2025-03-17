@@ -1,10 +1,11 @@
 package com.brningsa.hellsa.myapplication
 
 import com.brningsa.hellsa.myapplication.ui.AppScreen
-import com.brningsa.hellsa.myapplication.ui.screens.AddItemScreenProducer
+import com.brningsa.hellsa.myapplication.ui.screens.ItemScreenArgs
 import com.brningsa.hellsa.myapplication.ui.screens.ItemsScreenProducer
 import com.brningsa.hellsa.myapplication.ui.screens.ProfileScreenProducer
 import com.brningsa.hellsa.myapplication.ui.screens.SettingsScreenProducer
+import com.brningsa.hellsa.myapplication.ui.screens.itemScreenProducer
 import com.brningsa.hellsa.navigation.Route
 import kotlinx.parcelize.Parcelize
 
@@ -13,7 +14,9 @@ sealed class AppRoute(
 ) : Route {
 
     @Parcelize
-    data object AddItem : AppRoute(AddItemScreenProducer)
+    data class Item(
+        val args: ItemScreenArgs
+    ) : AppRoute(itemScreenProducer(args))
 
     sealed class Tab(
         screenProducer: () -> AppScreen

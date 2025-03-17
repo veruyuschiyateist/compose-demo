@@ -1,5 +1,6 @@
 package com.brningsa.hellsa.myapplication.ui.screens
 
+import android.os.Parcelable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -25,13 +26,34 @@ import com.brningsa.hellsa.myapplication.R
 import com.brningsa.hellsa.myapplication.ui.AppScreen
 import com.brningsa.hellsa.myapplication.ui.AppScreenEnvironment
 import com.brningsa.hellsa.navigation.LocalRouter
+import kotlinx.parcelize.Parcelize
 
-val AddItemScreenProducer = { AddItemScreen() }
+fun itemScreenProducer(args: ItemScreenArgs): () -> ItemScreen = { ItemScreen(args) }
 
-class AddItemScreen : AppScreen {
+sealed class ItemScreenArgs : Parcelable {
+
+    @Parcelize
+    data object Add : ItemScreenArgs()
+
+    @Parcelize
+    data class Edit(val index: Int) : ItemScreenArgs()
+}
+
+data class ItemScreenResponse(
+    val args: ItemScreenArgs,
+    val newValue: String
+)
+
+class ItemScreen(
+    private val args: ItemScreenArgs
+) : AppScreen {
 
     override val environment = AppScreenEnvironment().apply {
-        titleRes = R.string.add_item
+        titleRes = if (args is ItemScreenArgs.Add) {
+            R.string.add_item
+        } else {
+            R.string.edit_item
+        }
     }
 
     @Composable
@@ -39,10 +61,15 @@ class AddItemScreen : AppScreen {
         val itemsRepository = ItemsRepository.get()
         val router = LocalRouter.current
 
-        AddItemContent(
-            onSubmitNewItem = {
-                itemsRepository.addItem(it)
-                router.pop()
+        ItemContent(
+            initialValue = if (args is ItemScreenArgs.Edit) {
+                remember { itemsRepository.getItems().value[args.index] }
+            } else {
+                ""
+            },
+            isAddMode = args is ItemScreenArgs.Add,
+            onSubmitNewItem = { newValue ->
+                router.pop(ItemScreenResponse(args, newValue))
             }
         )
     }
@@ -50,12 +77,16 @@ class AddItemScreen : AppScreen {
 }
 
 @Composable
-fun AddItemContent(onSubmitNewItem: (String) -> Unit) {
-    var newItemValue by rememberSaveable {
-        mutableStateOf("")
+fun ItemContent(
+    initialValue: String = "",
+    isAddMode: Boolean = false,
+    onSubmitNewItem: (String) -> Unit
+) {
+    var currentItemValue by rememberSaveable {
+        mutableStateOf(initialValue)
     }
     val isAddEnabled by remember {
-        derivedStateOf { newItemValue.isNotEmpty() }
+        derivedStateOf { currentItemValue.isNotEmpty() }
     }
     Column(
         verticalArrangement = Arrangement.Center,
@@ -63,9 +94,9 @@ fun AddItemContent(onSubmitNewItem: (String) -> Unit) {
         modifier = Modifier.fillMaxSize()
     ) {
         OutlinedTextField(
-            value = newItemValue,
+            value = currentItemValue,
             onValueChange = {
-                newItemValue = it
+                currentItemValue = it
             },
             label = {
                 Text(
@@ -80,16 +111,21 @@ fun AddItemContent(onSubmitNewItem: (String) -> Unit) {
         Button(
             enabled = isAddEnabled,
             onClick = {
-                onSubmitNewItem(newItemValue)
+                onSubmitNewItem(currentItemValue)
             }
         ) {
-            Text(text = stringResource(R.string.add_new_item))
+            val buttonText = if (isAddMode) {
+                stringResource(R.string.add_new_item)
+            } else {
+                stringResource(R.string.edit_item)
+            }
+            Text(text = buttonText)
         }
     }
 }
 
 @Preview(showSystemUi = true)
 @Composable
-private fun AppItemPreview() {
-    AddItemContent(onSubmitNewItem = {})
+private fun ItemPreview() {
+    ItemContent(onSubmitNewItem = {})
 }
