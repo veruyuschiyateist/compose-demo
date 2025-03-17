@@ -5,6 +5,7 @@ import android.os.Parcel
 import android.os.Parcelable
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.core.os.ParcelCompat
 import com.brningsa.hellsa.navigation.NavigationState
@@ -19,51 +20,38 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 internal class ScreenStack(
     private val routes: SnapshotStateList<RouteRecord>,
     private val screenResponseReceiverBus: ScreenResponseReceiverBus = ScreenResponseReceiverBus()
-) : NavigationState, Router, InternalNavigationState, Parcelable {
+) : Parcelable {
 
-    private val eventsFlow = MutableSharedFlow<NavigationEvent>(
-        extraBufferCapacity = Int.MAX_VALUE
-    )
 
-    override val isRoot: Boolean
+    val isRoot: Boolean
         get() = routes.size == 1
 
-    override val currentRoute: Route
+    val currentRoute: Route
         get() = routes.last().route
 
-    override val currentScreen: Screen by derivedStateOf {
+    val currentScreen: Screen by derivedStateOf {
         currentRoute.screenProducer()
     }
 
-    override val currentUuid: String
+    val currentUuid: String
         get() = routes.last().uuid
 
-    override val screenResponseReceiver: ScreenResponseReceiver = screenResponseReceiverBus
+    val screenResponseReceiver: ScreenResponseReceiver = screenResponseReceiverBus
 
-    override fun launch(route: Route) {
+    fun launch(route: Route) {
         screenResponseReceiverBus.cleanUp()
         routes.add(RouteRecord(route))
     }
 
-    override fun pop(response: Any?) {
+    fun pop(response: Any?): RouteRecord? {
         val removedRoute = routes.removeLastOrNull()
         if (removedRoute != null) {
-            eventsFlow.tryEmit(NavigationEvent.Removed(removedRoute))
             if (response != null) {
                 screenResponseReceiverBus.send(response)
             }
         }
-    }
 
-    override fun restart(route: Route) {
-        screenResponseReceiverBus.cleanUp()
-        routes.apply {
-            routes.forEach {
-                eventsFlow.tryEmit(NavigationEvent.Removed(route = it))
-            }
-            clear()
-            add(RouteRecord(route))
-        }
+        return removedRoute
     }
 
     constructor(parcel: Parcel) : this(
@@ -77,6 +65,10 @@ internal class ScreenStack(
         }
     )
 
+    constructor(rootRoute: Route) : this(
+        routes = mutableStateListOf(RouteRecord(rootRoute))
+    )
+
     override fun describeContents(): Int {
         return 0
     }
@@ -85,7 +77,5 @@ internal class ScreenStack(
         dest.writeList(routes)
     }
 
-    override fun listen(): Flow<NavigationEvent> {
-        return eventsFlow
-    }
+    fun getAllRouteRecords(): List<RouteRecord> = routes
 }

@@ -9,5 +9,9 @@ interface Router {
 
     fun pop(response: Any? = null)
 
-    fun restart(route: Route)
+    fun restart(route: Route) = restart(listOf(route))
+
+    fun restart(rootRoutes: List<Route>, initialIndex: Int = 0)
+
+    fun switchStack(index: Int)
 }

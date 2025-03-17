@@ -9,4 +9,6 @@ interface NavigationState {
     val currentRoute: Route
 
     val currentScreen: Screen
+
+    val currentStackIndex: Int
 }

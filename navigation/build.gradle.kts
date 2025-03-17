@@ -54,4 +54,5 @@ dependencies {
     implementation(libs.androidx.ui)
     implementation(libs.androidx.foundation)
 
+    api(libs.kotlinx.collections.immutable)
 }

@@ -42,7 +42,7 @@ import com.brningsa.hellsa.navigation.rememberNavigation
 fun AppScaffold(
     itemsRepository: ItemsRepository = ItemsRepository.get()
 ) {
-    val navigation = rememberNavigation(initialRoute = AppRoute.Tab.Items)
+    val navigation = rememberNavigation(AppRouteTabs)
     val (router, navigationState) = navigation
     val environment = navigationState.currentScreen.environment as AppScreenEnvironment
 
@@ -121,32 +121,30 @@ fun AppScaffold(
         },
         floatingActionButtonPosition = FabPosition.End,
         bottomBar = {
-            if (navigationState.isRoot) {
-                NavigationBar {
-                    AppRouteTabs.forEach { tab ->
-                        val environment = remember(tab) {
-                            tab.screenProducer().environment
-                        }
-                        val icon = environment.icon
-                        if (icon != null) {
-                            NavigationBarItem(
-                                selected = navigationState.currentRoute == tab,
-                                label = {
-                                    Text(text = stringResource(environment.titleRes))
-                                },
-                                onClick = {
-                                    router.restart(route = tab)
-                                },
-                                icon = {
-                                    Icon(
-                                        imageVector = icon,
-                                        contentDescription = stringResource(environment.titleRes)
-                                    )
-                                }
-                            )
-                        }
-
+            NavigationBar {
+                AppRouteTabs.forEachIndexed { index, tab ->
+                    val environment = remember(tab) {
+                        tab.screenProducer().environment
                     }
+                    val icon = environment.icon
+                    if (icon != null) {
+                        NavigationBarItem(
+                            selected = navigationState.currentStackIndex == index,
+                            label = {
+                                Text(text = stringResource(environment.titleRes))
+                            },
+                            onClick = {
+                                router.switchStack(index)
+                            },
+                            icon = {
+                                Icon(
+                                    imageVector = icon,
+                                    contentDescription = stringResource(environment.titleRes)
+                                )
+                            }
+                        )
+                    }
+
                 }
             }
         },

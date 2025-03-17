@@ -7,6 +7,7 @@ import com.brningsa.hellsa.myapplication.ui.screens.ProfileScreenProducer
 import com.brningsa.hellsa.myapplication.ui.screens.SettingsScreenProducer
 import com.brningsa.hellsa.myapplication.ui.screens.itemScreenProducer
 import com.brningsa.hellsa.navigation.Route
+import kotlinx.collections.immutable.persistentListOf
 import kotlinx.parcelize.Parcelize
 
 sealed class AppRoute(
@@ -33,6 +34,6 @@ sealed class AppRoute(
     }
 }
 
-val AppRouteTabs = listOf(
+val AppRouteTabs = persistentListOf(
     AppRoute.Tab.Items, AppRoute.Tab.Settings, AppRoute.Tab.Profile
 )
