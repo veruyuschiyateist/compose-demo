@@ -30,6 +30,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
+import com.brningsa.hellsa.myapplication.ui.AppDeepLinkHandler
 import com.brningsa.hellsa.myapplication.ui.AppScreenEnvironment
 import com.brningsa.hellsa.myapplication.ui.scaffold.AppFloatingActionButton
 import com.brningsa.hellsa.myapplication.ui.theme.MyApplicationTheme
@@ -42,7 +43,7 @@ import com.brningsa.hellsa.navigation.rememberNavigation
 fun AppScaffold(
     itemsRepository: ItemsRepository = ItemsRepository.get()
 ) {
-    val navigation = rememberNavigation(AppRouteTabs)
+    val navigation = rememberNavigation(AppRouteTabs, deepLinksHandler = AppDeepLinkHandler)
     val (router, navigationState) = navigation
     val environment = navigationState.currentScreen.environment as AppScreenEnvironment
 

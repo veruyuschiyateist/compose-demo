@@ -7,6 +7,7 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.snapshots.SnapshotStateList
+import androidx.compose.runtime.toMutableStateList
 import androidx.core.os.ParcelCompat
 import com.brningsa.hellsa.navigation.NavigationState
 import com.brningsa.hellsa.navigation.Route
@@ -63,6 +64,10 @@ internal class ScreenStack(
                 RouteRecord::class.java
             )
         }
+    )
+
+    constructor(routes: List<Route>) : this(
+        routes.map(::RouteRecord).toMutableStateList()
     )
 
     constructor(rootRoute: Route) : this(
