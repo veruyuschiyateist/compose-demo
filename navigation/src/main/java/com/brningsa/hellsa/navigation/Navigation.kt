@@ -24,7 +24,7 @@ data class Navigation(
     val navigationState: NavigationState,
     val internalNavigationState: InternalNavigationState
 )
-
+    
 @SuppressLint("ContextCastToActivity")
 @Composable
 fun rememberNavigation(

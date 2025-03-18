@@ -2,7 +2,7 @@ package com.brningsa.hellsa.myapplication.ui
 
 import android.net.Uri
 import com.brningsa.hellsa.myapplication.AppRoute
-import com.brningsa.hellsa.myapplication.ui.screens.ItemScreenArgs
+import com.brningsa.hellsa.myapplication.ui.screens.item.ItemScreenArgs
 import com.brningsa.hellsa.navigation.links.DeepLinksHandler
 import com.brningsa.hellsa.navigation.links.MultiStackState
 

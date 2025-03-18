@@ -3,6 +3,8 @@ package com.brningsa.hellsa.myapplication
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
+import javax.inject.Inject
+import javax.inject.Singleton
 
 interface ItemsRepository {
 
@@ -14,12 +16,14 @@ interface ItemsRepository {
 
     fun clear()
 
-    companion object {
-        fun get(): ItemsRepository = ItemsRepositoryImpl
-    }
+//    old way
+//    companion object {
+//        fun get(): ItemsRepository = ItemsRepositoryImpl
+//    }
 }
 
-object ItemsRepositoryImpl : ItemsRepository {
+@Singleton
+class ItemsRepositoryImpl @Inject constructor() : ItemsRepository {
 
     private val items = MutableStateFlow(generateFakeItems())
 

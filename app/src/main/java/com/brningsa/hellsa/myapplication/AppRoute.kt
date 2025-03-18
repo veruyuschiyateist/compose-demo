@@ -1,11 +1,11 @@
 package com.brningsa.hellsa.myapplication
 
 import com.brningsa.hellsa.myapplication.ui.AppScreen
-import com.brningsa.hellsa.myapplication.ui.screens.ItemScreenArgs
-import com.brningsa.hellsa.myapplication.ui.screens.ItemsScreenProducer
+import com.brningsa.hellsa.myapplication.ui.screens.item.ItemScreenArgs
+import com.brningsa.hellsa.myapplication.ui.screens.items.ItemsScreenProducer
 import com.brningsa.hellsa.myapplication.ui.screens.ProfileScreenProducer
 import com.brningsa.hellsa.myapplication.ui.screens.SettingsScreenProducer
-import com.brningsa.hellsa.myapplication.ui.screens.itemScreenProducer
+import com.brningsa.hellsa.myapplication.ui.screens.item.itemScreenProducer
 import com.brningsa.hellsa.navigation.Route
 import kotlinx.collections.immutable.persistentListOf
 import kotlinx.parcelize.Parcelize

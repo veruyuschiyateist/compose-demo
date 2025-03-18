@@ -1,4 +1,4 @@
-package com.brningsa.hellsa.myapplication.ui.screens
+package com.brningsa.hellsa.myapplication.ui.screens.items
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.fillMaxSize
@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material.icons.filled.Add
@@ -19,12 +18,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.brningsa.hellsa.myapplication.AppRoute
-import com.brningsa.hellsa.myapplication.ItemsRepository
 import com.brningsa.hellsa.myapplication.R
+import com.brningsa.hellsa.myapplication.di.injectViewModel
 import com.brningsa.hellsa.myapplication.ui.AppScreen
 import com.brningsa.hellsa.myapplication.ui.AppScreenEnvironment
 import com.brningsa.hellsa.myapplication.ui.FloatingAction
+import com.brningsa.hellsa.myapplication.ui.screens.item.ItemScreenArgs
 import com.brningsa.hellsa.navigation.LocalRouter
 import com.brningsa.hellsa.navigation.ResponseListener
 import com.brningsa.hellsa.navigation.Router
@@ -49,20 +50,15 @@ class ItemsScreen : AppScreen {
     @Composable
     override fun Content() {
         router = LocalRouter.current
+        val viewModel = injectViewModel<ItemsViewModel>()
 
-        val itemsRepository = ItemsRepository.get()
-        val items by itemsRepository.getItems().collectAsStateWithLifecycle()
+        val items by viewModel.itemsFlow.collectAsStateWithLifecycle()
 
         val isEmpty by remember {
             derivedStateOf { items.isEmpty() }
         }
-        ResponseListener<ItemScreenResponse> { response ->
-            if (response.args is ItemScreenArgs.Edit) {
-                itemsRepository.update(response.args.index, response.newValue)
-            } else {
-                itemsRepository.addItem(response.newValue)
-            }
-        }
+        ResponseListener(viewModel::processResponse)
+
         ItemsContent(
             isItemsEmpty = isEmpty,
             items = { items },
